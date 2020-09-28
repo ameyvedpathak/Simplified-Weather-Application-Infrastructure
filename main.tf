@@ -43,7 +43,8 @@ resource "aws_lambda_function" "example" {
    # exported in that file.
    handler = "lambda_function.lambda_handler"
    runtime = "python3.8"
-   filename= "queryopenweatherapi.zip"
+   s3_bucket = aws_s3_bucket.s3_bucket.bucket
+   #filename= "queryopenweatherapi.zip"
    role = aws_iam_role.lambda_exec.arn
 }
 
