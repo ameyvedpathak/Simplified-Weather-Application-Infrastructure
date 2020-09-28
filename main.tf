@@ -71,5 +71,5 @@ EOF
 }
 resource "aws_iam_role_policy_attachment" "lambda_exec-attach" {
   role       = aws_iam_role.lambda_exec.name
-  policy_arn = "arn:aws:iam::308726405065:role/service-role/queryopenweatherapi-role-jjq8zbll"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
