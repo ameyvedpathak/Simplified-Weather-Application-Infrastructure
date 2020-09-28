@@ -5,7 +5,7 @@ provider "aws" {
 
 terraform {
  backend "s3" {
-   bucket = "Simplified-Weather-Application-Infrastructure-State"
+   bucket = "simplified-weather-application-infrastructure-state"
    key    = "default-infrastructure"
    region = "us-east-1"
  }
