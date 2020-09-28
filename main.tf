@@ -45,12 +45,21 @@ EOF
 
 }
 
+data "archive_file" "dummy"{
+type= "zip"
+output_path = "queryopenweatherapi.zip"
+source {
+content="hello"
+filename="dummy.txt"
+}
+}
+
 resource "aws_lambda_function" "example" {
    function_name = "queryopenweatherapi"
    handler = "lambda_function.lambda_handler"
    runtime = "python3.8"
    #s3_bucket = aws_s3_bucket.s3_bucket.bucket
-   filename= "queryopenweatherapi.zip"
+   filename= "${data.archive_file.dummy.output_path}"
    source_code_hash = filebase64sha256("queryopenweatherapi.zip")
    role = aws_iam_role.lambda_exec.arn
 }
