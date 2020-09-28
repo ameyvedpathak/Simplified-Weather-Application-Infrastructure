@@ -21,35 +21,9 @@ resource "aws_s3_bucket" "s3_bucket_2" {
 
 }
 
-/*
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
-  }
-}
 
-provider "aws" {
-   region = "us-east-1"
-}
-*/
-
-resource "aws_lambda_function" "example" {
-   function_name = "queryopenweatherapi"
-
-   # "main" is the filename within the zip file (main.js) and "handler"
-   # is the name of the property under which the handler function was
-   # exported in that file.
-   handler = "lambda_function.lambda_handler"
-   runtime = "python3.8"
-   s3_bucket = aws_s3_bucket.s3_bucket.bucket
-   #filename= "queryopenweatherapi.zip"
-   role = aws_iam_role.lambda_exec.arn
-}
-
- # IAM role which dictates what other AWS services the Lambda function
- # may access.
+# IAM role which dictates what other AWS services the Lambda function
+# may access.
 resource "aws_iam_role" "lambda_exec" {
    #name = "queryopenweatherapi-role-jjq8zbll"
 
@@ -70,6 +44,17 @@ resource "aws_iam_role" "lambda_exec" {
 EOF
 
 }
+
+resource "aws_lambda_function" "example" {
+   function_name = "queryopenweatherapi"
+   handler = "lambda_function.lambda_handler"
+   runtime = "python3.8"
+   #s3_bucket = aws_s3_bucket.s3_bucket.bucket
+   filename= "queryopenweatherapi.zip"
+   source_code_hash = filebase64sha256("queryopenweatherapi.zip")
+   role = aws_iam_role.lambda_exec.arn
+}
+
 resource "aws_iam_role_policy_attachment" "lambda_exec-attach" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
