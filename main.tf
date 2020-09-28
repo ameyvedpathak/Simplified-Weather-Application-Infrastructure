@@ -60,7 +60,7 @@ resource "aws_lambda_function" "example" {
    runtime = "python3.8"
    #s3_bucket = aws_s3_bucket.s3_bucket.bucket
    filename= data.archive_file.dummy.output_path
-   source_code_hash = filebase64sha256("queryopenweatherapi.zip")
+   #source_code_hash = filebase64sha256("queryopenweatherapi.zip")
    role = aws_iam_role.lambda_exec.arn
 }
 
