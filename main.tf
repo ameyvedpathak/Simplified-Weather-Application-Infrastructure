@@ -25,7 +25,6 @@ resource "aws_s3_bucket" "s3_bucket_2" {
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
 resource "aws_iam_role" "lambda_exec" {
-   #name = "queryopenweatherapi-role-jjq8zbll"
 
    assume_role_policy = <<EOF
 {
@@ -47,7 +46,7 @@ EOF
 
 data "archive_file" "dummy"{
 type= "zip"
-output_path = "queryopenweatherapi.zip"
+output_path = "queryopenweatherapi-test.zip"
 source {
 content="hello"
 filename="dummy.txt"
@@ -55,12 +54,10 @@ filename="dummy.txt"
 }
 
 resource "aws_lambda_function" "example" {
-   function_name = "queryopenweatherapi"
+   function_name = "queryopenweatherapi-test"
    handler = "lambda_function.lambda_handler"
    runtime = "python3.8"
-   #s3_bucket = aws_s3_bucket.s3_bucket.bucket
    filename= data.archive_file.dummy.output_path
-   #source_code_hash = filebase64sha256("queryopenweatherapi.zip")
    role = aws_iam_role.lambda_exec.arn
 }
 
