@@ -58,6 +58,7 @@ resource "aws_iam_role" "lambda_exec" {
 
    assume_role_policy = <<EOF
 {
+{
   "Version": "2012-10-17",
   "Statement": [
     {
@@ -69,7 +70,7 @@ resource "aws_iam_role" "lambda_exec" {
       "Sid": ""
     }
   ]
-}
+},
 {
   "Effect": "Allow",
   "Action": [
@@ -78,6 +79,7 @@ resource "aws_iam_role" "lambda_exec" {
     "logs:PutLogEvents"
   ],
   "Resource": "arn:aws:logs:*:*:*"
+}
 }
 EOF
 
