@@ -29,7 +29,6 @@ resource "aws_s3_bucket" "s3_bucket_3" {
   }
 }
 
-/*
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
 resource "aws_iam_role" "lambda_exec" {
@@ -52,34 +51,24 @@ EOF
 
 }
 
-*/
+resource "aws_iam_policy" "lambda_logging" {
+  description = "IAM policy for logging from a lambda"
 
-resource "aws_iam_role" "lambda_exec" {
-
-   assume_role_policy = <<EOF
-{
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
     }
   ]
-},
-{
-  "Effect": "Allow",
-  "Action": [
-    "logs:CreateLogGroup",
-    "logs:CreateLogStream",
-    "logs:PutLogEvents"
-  ],
-  "Resource": "arn:aws:logs:*:*:*"
-}
+  
 }
 EOF
 
