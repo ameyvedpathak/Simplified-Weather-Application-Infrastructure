@@ -21,6 +21,14 @@ resource "aws_s3_bucket" "s3_bucket_2" {
 
 }
 
+resource "aws_s3_bucket" "s3_bucket_3" {
+  bucket = "simplifiedweatherapp-test"
+  acl = "public-read"
+  website {
+    index_document = "weather.html"
+  }
+}
+
 
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
