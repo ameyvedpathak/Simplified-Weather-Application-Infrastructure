@@ -29,7 +29,7 @@ resource "aws_s3_bucket" "s3_bucket_3" {
   }
 }
 
-
+/*
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
 resource "aws_iam_role" "lambda_exec" {
@@ -40,6 +40,33 @@ resource "aws_iam_role" "lambda_exec" {
   "Statement": [
     {
       "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+
+}
+
+*/
+
+resource "aws_iam_role" "lambda_exec" {
+
+   assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",[
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
       "Principal": {
         "Service": "lambda.amazonaws.com"
       },
@@ -95,4 +122,9 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda_function_1" {
   function_name = aws_lambda_function.lambda_function_1.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.hourlytrigger.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::308726405065:policy/service-role/AWSLambdaBasicExecutionRole-a488c18d-a021-43e1-8cd1-d1cc2d2db8e0"
 }
