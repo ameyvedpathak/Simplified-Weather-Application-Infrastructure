@@ -61,18 +61,22 @@ resource "aws_iam_role" "lambda_exec" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:*:*:*",
+      "Action": "sts:AssumeRole",
       "Principal": {
         "Service": "lambda.amazonaws.com"
       },
       "Effect": "Allow",
       "Sid": ""
-    }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+        ],
+        "Resource": "arn:aws:logs:*:*:*"
+        },
   ]
 }
 EOF
