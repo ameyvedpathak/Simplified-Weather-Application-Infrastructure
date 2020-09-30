@@ -61,7 +61,7 @@ filename="dummy.txt"
 }
 }
 
-resource "aws_lambda_function" "example" {
+resource "aws_lambda_function" "lambda_function_1" {
    function_name = "queryopenweatherapi-test"
    handler = "lambda_function.lambda_handler"
    runtime = "python3.8"
@@ -72,4 +72,27 @@ resource "aws_lambda_function" "example" {
 resource "aws_iam_role_policy_attachment" "lambda_exec-attach" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+#####################################
+
+
+resource "aws_cloudwatch_event_rule" "hourlytrigger" {
+  name                = "hourlytrigger"
+  description         = "Fires every one hour"
+  schedule_expression = "rate(1 hour)"
+}
+
+resource "aws_cloudwatch_event_target" "lambda_function_1_hourlytrigger" {
+  rule      = "${aws_cloudwatch_event_rule.hourlytrigger.name}"
+  target_id = "lambda_function_1"
+  arn       = "${aws_lambda_function.lambda_function_1.arn}"
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda_function_1" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.lambda_function_1.function_name}"
+  principal     = "events.amazonaws.com"
+  source_arn    = "${aws_cloudwatch_event_rule.hourlytrigger.arn}"
 }
