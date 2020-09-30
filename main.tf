@@ -84,15 +84,15 @@ resource "aws_cloudwatch_event_rule" "hourlytrigger" {
 }
 
 resource "aws_cloudwatch_event_target" "lambda_function_1_hourlytrigger" {
-  rule      = "${aws_cloudwatch_event_rule.hourlytrigger.name}"
+  rule      = "aws_cloudwatch_event_rule.hourlytrigger.name"
   target_id = "lambda_function_1"
-  arn       = "${aws_lambda_function.lambda_function_1.arn}"
+  arn       = "aws_lambda_function.lambda_function_1.arn"
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda_function_1" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.lambda_function_1.function_name}"
+  function_name = "aws_lambda_function.lambda_function_1.function_name"
   principal     = "events.amazonaws.com"
-  source_arn    = "${aws_cloudwatch_event_rule.hourlytrigger.arn}"
+  source_arn    = "aws_cloudwatch_event_rule.hourlytrigger.arn"
 }
