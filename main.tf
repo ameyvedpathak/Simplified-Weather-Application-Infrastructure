@@ -11,23 +11,42 @@ terraform {
  }
 }
 
-resource "aws_s3_bucket" "s3_bucket" {
-  bucket = "localopenweatherdata"
+resource "aws_s3_bucket" "s3_bucket" {``
+  bucket = "localopenweatherdata-test"
 
 }
 
 resource "aws_s3_bucket" "s3_bucket_2" {
-  bucket = "simplifiedweatherapp"
-
-}
-
-resource "aws_s3_bucket" "s3_bucket_3" {
   bucket = "simplifiedweatherapp-test"
   acl = "public-read"
   website {
     index_document = "weather.html"
   }
 }
+
+
+resource "aws_s3_bucket_policy" "s3_bucket_2" {
+  bucket = aws_s3_bucket.s3_bucket_2.id
+
+  policy = <<POLICY
+  {
+      "Version": "2008-10-17",
+      "Id": "PolicyForPublicWebsiteContent",
+      "Statement": [
+          {
+              "Sid": "PublicReadGetObject",
+              "Effect": "Allow",
+              "Principal": {
+                  "AWS": "*"
+              },
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::simplifiedweatherapp-test/*"
+          }
+      ]
+  }
+POLICY
+}
+
 
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
@@ -68,7 +87,7 @@ resource "aws_iam_policy" "lambda_logging" {
       "Effect": "Allow"
     }
   ]
-  
+
 }
 EOF
 
