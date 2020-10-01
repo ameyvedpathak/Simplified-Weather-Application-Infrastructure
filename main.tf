@@ -11,12 +11,12 @@ terraform {
  }
 }
 
-resource "aws_s3_bucket" "s3_bucket_1" {
+resource "aws_s3_bucket" "s3_bucket_101" {
   bucket = "localopenweatherdata"
 
 }
 
-resource "aws_s3_bucket" "s3_bucket_1" {
+resource "aws_s3_bucket" "s3_bucket_102" {
   bucket = "simplifiedweatherapp"
 
 }
