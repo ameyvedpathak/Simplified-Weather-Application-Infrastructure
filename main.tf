@@ -212,7 +212,7 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb-attach" {
 resource "aws_s3_bucket_notification" "s3-lambda-trigger" {
 bucket = aws_s3_bucket.s3_bucket_1.bucket #"${aws_s3_bucket.bucket.id}"
 lambda_function {
-lambda_function_arn = aws_lambda_function.lambda_function_2.arn}"
+lambda_function_arn = aws_lambda_function.lambda_function_2.arn"
 events              = ["s3:ObjectCreated:*"]
 filter_prefix       = "file-prefix"
 filter_suffix       = "file-extension"
