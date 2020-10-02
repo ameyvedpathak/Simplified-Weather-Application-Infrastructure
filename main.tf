@@ -34,7 +34,7 @@ resource "aws_s3_bucket" "s3_bucket_2" {
   }
 }
 
-
+/*
 resource "aws_s3_bucket_policy" "s3_bucket_2" {
   bucket = aws_s3_bucket.s3_bucket_2.id
 
@@ -56,7 +56,7 @@ resource "aws_s3_bucket_policy" "s3_bucket_2" {
   }
 POLICY
 }
-
+*/
 
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
