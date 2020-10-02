@@ -39,7 +39,7 @@ resource "aws_s3_bucket_policy" "s3_bucket_2" {
   bucket = aws_s3_bucket.s3_bucket_2.id
 
   policy = <<POLICY
-  {
+    {
       "Version": "2012-10-17",
       "Statement": [
           {
@@ -56,6 +56,7 @@ resource "aws_s3_bucket_policy" "s3_bucket_2" {
       ]
   }
 POLICY
+
 }
 
 
