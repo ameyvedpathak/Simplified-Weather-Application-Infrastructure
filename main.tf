@@ -30,9 +30,9 @@ resource "aws_s3_bucket" "s3_bucket_2" {
   bucket = "simplifiedweatherapp-test"
   acl = "public-read"
   read_roles = ["", "]
-  website=[{
+  website {
     index_document = "weather.html"
-  }]
+  }
 }
 
 /*
