@@ -3,6 +3,9 @@ provider "aws" {
   region = "us-east-1"
 }
 
+## terraform backend bucket; Need to create this first manually
+## and then continue with rest of the code
+
 terraform {
  backend "s3" {
    bucket = "simplified-weather-application-infrastructure-state"
@@ -11,50 +14,19 @@ terraform {
  }
 }
 
-resource "aws_s3_bucket" "s3_bucket_101" {
+#### creating two S3 buckets ######
+resource "aws_s3_bucket" "s3_bucket_1" {
   bucket = "localopenweatherdata"
 
 }
 
-resource "aws_s3_bucket" "s3_bucket_102" {
-  bucket = "simplifiedweatherapp"
-
-}
-
-resource "aws_s3_bucket" "s3_bucket_1" {
-  bucket = "localopenweatherdata-test"
-
-}
-
 resource "aws_s3_bucket" "s3_bucket_2" {
-  bucket = "simplifiedweatherapp-test"
+  bucket = "simplifiedweatherapp"
   acl = "public-read"
   website {
     index_document = "weather.html"
   }
 }
-
-/*
-resource "aws_s3_bucket_policy" "s3_bucket_2_policy" {
-  bucket = aws_s3_bucket.s3_bucket_2.id
-
-  policy = <<POLICY
-  {
-    "Version":"2012-10-17",
-    "Statement":[
-      {
-        "Sid":"PublicRead",
-        "Effect":"Allow",
-        "Principal": "*",
-        "Action":["s3:GetObject","s3:GetObjectVersion"],
-        "Resource":["arn:aws:s3:::simplifiedweatherapp-test/*"]
-      }
-    ]
-  }
-POLICY
-
-}
-*/
 
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
@@ -78,6 +50,7 @@ EOF
 
 }
 
+########## IAM policy for logs ##############
 resource "aws_iam_policy" "lambda_logging" {
   description = "IAM policy for logging from a lambda"
 
@@ -100,7 +73,7 @@ resource "aws_iam_policy" "lambda_logging" {
 EOF
 
 }
-
+######### IAM policy for dynamoDB ###########
 resource "aws_iam_policy" "lambda_dynamodb" {
   description = "An IAM policy that grants permissions policy grants permissions for all of the DynamoDB actions on a table"
   policy = <<POLICY
@@ -121,10 +94,10 @@ resource "aws_iam_policy" "lambda_dynamodb" {
 POLICY
 
 }
-
+####################### First Lambda function #####################
 data "archive_file" "dummy"{
 type= "zip"
-output_path = "queryopenweatherapi-test.zip"
+output_path = "queryopenweatherapi.zip"
 source {
 content="hello"
 filename="dummy.txt"
@@ -132,7 +105,7 @@ filename="dummy.txt"
 }
 
 resource "aws_lambda_function" "lambda_function_1" {
-   function_name = "queryopenweatherapi-test"
+   function_name = "queryopenweatherapi"
    handler = "lambda_function.lambda_handler"
    runtime = "python3.8"
    filename= data.archive_file.dummy.output_path
@@ -144,8 +117,7 @@ resource "aws_iam_role_policy_attachment" "lambda_exec-attach" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
-#####################################
-
+#### Adding Cloud Watch trigger for every hour
 
 resource "aws_cloudwatch_event_rule" "hourlytrigger" {
   name                = "hourlytrigger"
@@ -172,11 +144,11 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   policy_arn = "arn:aws:iam::308726405065:policy/service-role/AWSLambdaBasicExecutionRole-a488c18d-a021-43e1-8cd1-d1cc2d2db8e0"
 }
 
-##########################################
+####################### Second Lambda function #####################
 
 data "archive_file" "dummy_dataextractor"{
 type= "zip"
-output_path = "dataextractor-test.zip"
+output_path = "dataextractor.zip"
 source {
 content="hello"
 filename="dummy.txt"
@@ -184,7 +156,7 @@ filename="dummy.txt"
 }
 
 resource "aws_lambda_function" "lambda_function_2" {
-   function_name = "dataextractor-test"
+   function_name = "dataextractor"
    handler = "lambda_function.lambda_handler"
    runtime = "python3.8"
    filename= data.archive_file.dummy_dataextractor.output_path
@@ -224,11 +196,11 @@ resource "aws_s3_bucket_notification" "s3-lambda-trigger" {
     }
     depends_on = [aws_lambda_permission.lambda_invoke]
 }
-####################################################
+####################### Third Lambda function #####################
 
 data "archive_file" "dummy_querysimplifiedopenweatherdata"{
 type= "zip"
-output_path = "querysimplifiedopenweatherdata-test.zip"
+output_path = "querysimplifiedopenweatherdata.zip"
 source {
 content="hello"
 filename="dummy.txt"
@@ -236,7 +208,7 @@ filename="dummy.txt"
 }
 
 resource "aws_lambda_function" "lambda_function_3" {
-   function_name = "querysimplifiedopenweatherdata-test"
+   function_name = "querysimplifiedopenweatherdata"
    handler = "lambda_function.lambda_handler"
    runtime = "python3.8"
    filename= data.archive_file.dummy_querysimplifiedopenweatherdata.output_path
@@ -273,9 +245,9 @@ resource "aws_lambda_permission" "lambda_permission" {
   # within API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.myapi.execution_arn}/*/*/*"
 }
-################################################
+##################DynamoDB table #################
 resource "aws_dynamodb_table" "dynamodb_table" {
-  name           = "simplifiedopenweatherdata-test"
+  name           = "simplifiedopenweatherdata"
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "name"

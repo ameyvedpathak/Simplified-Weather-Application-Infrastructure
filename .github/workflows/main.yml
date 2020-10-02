@@ -27,13 +27,6 @@ jobs:
     - name: Infrastructure validate
       run: terraform validate
 
-    # - name: Infrastructure Plan
-    #   run: terraform plan
-    #   env:
-    #     TF_ACTION_WORKING_DIR: '.'
-    #     AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
     - name: Infrastructure Apply
       run: terraform apply -auto-approve
       env:
