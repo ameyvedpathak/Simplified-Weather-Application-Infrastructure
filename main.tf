@@ -29,12 +29,13 @@ resource "aws_s3_bucket" "s3_bucket_1" {
 resource "aws_s3_bucket" "s3_bucket_2" {
   bucket = "simplifiedweatherapp-test"
   acl = "public-read"
-  policy = file("policy.json")
-  website {
+  read_roles = ["", "]
+  website=[{
     index_document = "weather.html"
-  }
+  }]
 }
 
+/*
 resource "aws_s3_bucket_policy" "s3_bucket_2_policy" {
   bucket = aws_s3_bucket.s3_bucket_2.id
 
@@ -54,7 +55,7 @@ resource "aws_s3_bucket_policy" "s3_bucket_2_policy" {
 POLICY
 
 }
-
+*/
 
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
