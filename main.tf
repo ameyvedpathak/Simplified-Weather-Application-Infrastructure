@@ -224,4 +224,5 @@ resource "aws_s3_bucket_notification" "s3-lambda-trigger" {
     #filter_prefix       = "file-prefix"
     #filter_suffix       = "file-extension"
     }
+    depends_on = [aws_lambda_permission.lambda_invoke]
 }
