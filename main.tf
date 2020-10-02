@@ -34,29 +34,30 @@ resource "aws_s3_bucket" "s3_bucket_2" {
   }
 }
 
-/*
+
 resource "aws_s3_bucket_policy" "s3_bucket_2" {
   bucket = aws_s3_bucket.s3_bucket_2.id
 
   policy = <<POLICY
   {
-      "Version": "2008-10-17",
-      "Id": "PolicyForPublicWebsiteContent",
+      "Version": "2012-10-17",
       "Statement": [
           {
               "Sid": "PublicReadGetObject",
               "Effect": "Allow",
-              "Principal": {
-                  "AWS": "*"
-              },
-              "Action": "s3:GetObject",
-              "Resource": "arn:aws:s3:::simplifiedweatherapp-test/*"
+              "Principal": "*",
+              "Action": [
+                  "s3:GetObject"
+              ],
+              "Resource": [
+                  "arn:aws:s3:::aws_s3_bucket.s3_bucket_2.bucket/*"
+              ]
           }
       ]
   }
 POLICY
 }
-*/
+
 
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
@@ -260,8 +261,6 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb-attach_2" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
-
-
 resource "aws_api_gateway_rest_api" "myapi" {
   name        = "simplifiedopenweatherdata"
   description = "This is my API for lambda function"
@@ -277,3 +276,4 @@ resource "aws_lambda_permission" "lambda_permission" {
   # within API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.myapi.execution_arn}/*/*/*"
 }
+################################################
