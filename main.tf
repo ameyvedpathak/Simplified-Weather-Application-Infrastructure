@@ -103,6 +103,27 @@ EOF
 
 }
 
+resource "aws_iam_policy" "lambda_dynamodb" {
+  description = "An IAM policy that grants permissions policy grants permissions for all of the DynamoDB actions on a table"
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "dynamodb:*"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:::table/simplifiedopenweatherdata"
+      ],
+      "Effect": "Allow"
+    }
+  ]
+}
+POLICY
+
+}
+
 data "archive_file" "dummy"{
 type= "zip"
 output_path = "queryopenweatherapi-test.zip"
@@ -151,4 +172,38 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda_function_1" {
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::308726405065:policy/service-role/AWSLambdaBasicExecutionRole-a488c18d-a021-43e1-8cd1-d1cc2d2db8e0"
+}
+
+##########################################
+
+data "archive_file" "dummy_dataextractor"{
+type= "zip"
+output_path = "dataextractor-test.zip"
+source {
+content="hello"
+filename="dummy.txt"
+}
+}
+
+resource "aws_lambda_function" "lambda_function_2" {
+   function_name = "dataextractor-test"
+   handler = "lambda_function.lambda_handler"
+   runtime = "python3.8"
+   filename= data.archive_file.dummy_dataextractor.output_path
+   role = aws_iam_role.lambda_exec.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_exec-attach_2" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs_2" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::308726405065:policy/service-role/AWSLambdaBasicExecutionRole-a488c18d-a021-43e1-8cd1-d1cc2d2db8e0"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb-attach" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
