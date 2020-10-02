@@ -207,7 +207,7 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb-attach" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
-###################################################
+
 resource "aws_lambda_permission" "lambda_invoke" {
  statement_id  = "AllowS3Invoke"
  action        = "lambda:InvokeFunction"
@@ -225,4 +225,55 @@ resource "aws_s3_bucket_notification" "s3-lambda-trigger" {
     #filter_suffix       = "file-extension"
     }
     depends_on = [aws_lambda_permission.lambda_invoke]
+}
+####################################################
+
+data "archive_file" "dummy_querysimplifiedopenweatherdata"{
+type= "zip"
+output_path = "querysimplifiedopenweatherdata-test.zip"
+source {
+content="hello"
+filename="dummy.txt"
+}
+}
+
+resource "aws_lambda_function" "lambda_function_3" {
+   function_name = "querysimplifiedopenweatherdata-test"
+   handler = "lambda_function.lambda_handler"
+   runtime = "python3.8"
+   filename= data.archive_file.dummy_querysimplifiedopenweatherdata.output_path
+   role = aws_iam_role.lambda_exec.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_exec-attach_3" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs_3" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::308726405065:policy/service-role/AWSLambdaBasicExecutionRole-a488c18d-a021-43e1-8cd1-d1cc2d2db8e0"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb-attach_2" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
+
+
+resource "aws_api_gateway_rest_api" "myapi" {
+  name        = "simplifiedopenweatherdata"
+  description = "This is my API for lambda function"
+}
+
+resource "aws_lambda_permission" "lambda_permission" {
+  statement_id  = "AllowmyapiInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_function_3.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.myapi.execution_arn}/*/*/*"
 }
