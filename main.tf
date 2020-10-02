@@ -280,7 +280,7 @@ resource "aws_dynamodb_table" "dynamodb_table" {
   write_capacity = 1
   hash_key       = "LockID"
 attribute {
-    name = "name"
+    name = "Name"
     type = "S"
   }
 }
