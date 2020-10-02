@@ -29,7 +29,6 @@ resource "aws_s3_bucket" "s3_bucket_1" {
 resource "aws_s3_bucket" "s3_bucket_2" {
   bucket = "simplifiedweatherapp-test"
   acl = "public-read"
-  read_roles = ["", "]
   website {
     index_document = "weather.html"
   }
