@@ -274,3 +274,13 @@ resource "aws_lambda_permission" "lambda_permission" {
   source_arn = "${aws_api_gateway_rest_api.myapi.execution_arn}/*/*/*"
 }
 ################################################
+resource "aws_dynamodb_table" "dynamodb_table" {
+  name           = "simplifiedopenweatherdata-test"
+  read_capacity  = 1
+  write_capacity = 1
+  hash_key       = "LockID"
+attribute {
+    name = "name"
+    type = "S"
+  }
+}
