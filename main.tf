@@ -278,7 +278,7 @@ resource "aws_dynamodb_table" "dynamodb_table" {
   name           = "simplifiedopenweatherdata-test"
   read_capacity  = 1
   write_capacity = 1
-  hash_key       = "LockID"
+  hash_key       = "name"
     attribute {
       name = "name"
       type = "S"
